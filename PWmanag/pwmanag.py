@@ -1,12 +1,13 @@
-
-master_path = "C:/Users/marku/Desktop/PWmanag/master.txt"
-pw_manager = PWManag(file_path)
+import random
+import string
+from pathlib import Path
+import os
 
 class PWManag:
     def __init__(self, master_path):
         self.master_path = master_path
 
-    def auth(self):   
+    def auth(self, master_path):   
         master_in = str(input("Enter master password: "))
         with open(master_path, "r") as f:
             master = f.readline().strip()
@@ -19,19 +20,47 @@ class PWManag:
             print("ACCESS DENIED")
             quit()
 
-    def add_pw():
+    def first_start(self):      #Bygger filsystem - ikke ferdig
+        try:
+            f = open("data/master.txt")
+            self.auth(master_path)
+
+        except:
+            os.makedirs("PWmanag/data")
+            set_pw = input("Set a secure password: ")
+            with open(master_path, "a") as f:
+                f.write(set_pw)
+            self.auth()
+
+        return
+
+        
+    def add_pw(self):
+        pass
+        
+    
+    def view_pw(self):
         pass
     
-    def view_pw():
-        pass
-    
-    def edit_pw():
+    def edit_pw(self):
         pass
 
-    def change_mpw():
+    def change_mpw(self):
         pass
-    def end():
+
+    def end(self):
         pass
+
+    def gen_pw(self):
+        length = int(input("Password length(12 characters minimum.): "))
+        if length <= 12:
+            random_pw = "".join(random.choice(string.printable))
+        else: 
+            print("Password not long enough! Try again.")
+            gen_pw()
+
+
+        
 
 
 class Menu:
@@ -57,6 +86,14 @@ class Menu:
         }
 
 
+def menu():
+    Menu().select()
 
 
-pw_manager.authenticate_master()
+def start():
+    PWManag(master_path).first_start()
+
+master_path = "PWmanag/data/master.txt"
+
+
+start()
