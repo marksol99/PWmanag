@@ -3,6 +3,8 @@ import string
 from pathlib import Path
 import os
 
+
+
 class PWManag:
     def __init__(self, master_path):
         self.master_path = master_path
@@ -14,7 +16,8 @@ class PWManag:
 
         if master_in == master:
             print("ACCESS GRANTED")
-            menu()
+            menu_instance()
+
 
         else:
             print("ACCESS DENIED")
@@ -22,15 +25,15 @@ class PWManag:
 
     def first_start(self):      #Bygger filsystem - ikke ferdig
         try:
-            f = open("data/master.txt")
-            self.auth(master_path)
+            f = open(self.master_path)
+            self.auth(self.master_path)
 
-        except:
+        except FileNotFoundError:
             os.makedirs("PWmanag/data")
             set_pw = input("Set a secure password: ")
             with open(master_path, "a") as f:
                 f.write(set_pw)
-            self.auth()
+            self.auth(self.master_path)
 
         return
 
@@ -52,9 +55,10 @@ class PWManag:
         pass
 
     def gen_pw(self):
-        length = int(input("Password length(12 characters minimum.): "))
+        length = int(input("Password length(12 char.): "))
         if length <= 12:
             random_pw = "".join(random.choice(string.printable))
+            print(random_pw)
         else: 
             print("Password not long enough! Try again.")
             gen_pw()
@@ -64,8 +68,8 @@ class PWManag:
 
 
 class Menu:
-    def __init__(self):
-        pass
+    def __init__(self, master_path):
+        self.master_path = master_path
 
     def show_menu(self):
         print("""
@@ -75,25 +79,36 @@ class Menu:
 4. Change Master Password
 5. Exit              
               """)
-    def select():
-        Menu.show_menu()
+        self.select()
+        
+    def select(self): ##
         selection = {
-            "1": PWManag.add_pw(),
-            "2": PWManag.view_pw(),
-            "3": PWManag.edit_pw(),
-            "4": PWManag.change_mpw(),
-            "5": PWManag.end()
+            "1": PWManag(self.master_path).add_pw,
+            "2": PWManag(self.master_path).view_pw,
+            "3": PWManag(self.master_path).edit_pw,
+            "4": PWManag(self.master_path).change_mpw,
+            "5": PWManag(self.master_path).end
         }
 
+        selected = int(input("Select one(1-5): "))
+        print(selected)
+        
+        if selected in selection:
+            selection[selected]()
+        else:
+            print("ERROR! RETRY!")
+            menu_inst = Menu(self.master_path)
+            menu_inst.show_menu()
 
-def menu():
-    Menu().select()
+
+def menu_instance():
+    Menu(master_path).show_menu()
 
 
-def start():
+def start(master_path):
     PWManag(master_path).first_start()
 
 master_path = "PWmanag/data/master.txt"
 
 
-start()
+start(master_path)
